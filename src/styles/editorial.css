@@ -1,0 +1,411 @@
+/* ═══════════════════════════════════════════════════════════════════
+   EDITORIAL CÁLIDO — Sistema Visual Reutilizable
+   Versión 1.0  ·  Jonathan Mendoza  ·  @idiomaswebespanol
+   Compatible con Tailwind CSS v4 (@import "tailwindcss")
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   § 01   TEMA — Tokens de diseño
+   ───────────────────────────────────────────── */
+
+@theme {
+  /* ---- tipografía ---- */
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans:    "Space Grotesk", system-ui, sans-serif;
+  --font-mono:    "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* ---- neutros cálidos ---- */
+  --color-paper:  #f5eedf;
+  --color-parch:  #ede2c9;
+  --color-ink:    #191410;
+  --color-soot:   #221a14;
+  --color-cream:  #f2e9d6;
+
+  /* ---- acentos semánticos (sobre claro) ---- */
+  --color-crimson:  #c2391e;
+  --color-viridian: #0e5b4f;
+  --color-gold:     #9c6a0b;
+
+  /* ---- acentos semánticos (sobre oscuro) ---- */
+  --color-crimson-bright:  #ff7457;
+  --color-viridian-bright: #54c7ab;
+  --color-gold-bright:     #e5b04c;
+}
+
+/* ─────────────────────────────────────────────
+   § 02   BASE — Superficie, tipografía, selección
+   ───────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-crimson);
+  color: var(--color-paper);
+}
+
+section[id] {
+  scroll-margin-top: 4.25rem;
+}
+
+/* ─────────────────────────────────────────────
+   § 03   SCROLLBAR personalizada
+   ───────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-ink) 28%, transparent);
+  border-radius: 8px;
+  border: 2px solid var(--color-paper);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-crimson);
+}
+
+/* ─────────────────────────────────────────────
+   § 04   TEXTURAS — Film grain, watermark
+   ───────────────────────────────────────────── */
+
+.bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.txt-outline-ink {
+  -webkit-text-stroke: 1.5px rgba(25, 20, 16, 0.22);
+  color: transparent;
+}
+
+.txt-outline-cream {
+  -webkit-text-stroke: 1.5px rgba(242, 233, 214, 0.2);
+  color: transparent;
+}
+
+/* ─────────────────────────────────────────────
+   § 05   ANIMACIONES
+   ───────────────────────────────────────────── */
+
+/* ---- marquee tipográfico infinito ---- */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee var(--marquee-dur, 36s) linear infinite;
+}
+.marquee-paused:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* ---- flotación sutil (chips, tarjetas decorativas) ---- */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50%      { transform: translateY(-12px) rotate(var(--rot, 0deg)); }
+}
+.animate-floaty {
+  animation: floaty 7s ease-in-out infinite;
+}
+
+/* ---- indicador de scroll ---- */
+@keyframes cuedot {
+  0%  { transform: translateY(0);  opacity: 1; }
+  70% { transform: translateY(14px); opacity: 0; }
+}
+.animate-cuedot {
+  animation: cuedot 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* ---- subrayado sketch ---- */
+.sketch-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: 0 96%;
+}
+
+/* ---- reducción de movimiento ---- */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-floaty {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   § 06   COMPONENTES — Tipografía editorial
+   ───────────────────────────────────────────── */
+
+/* ---- overline de sección: § NN + regla + etiqueta ---- */
+.overline-bar {
+  @apply flex items-center gap-3;
+}
+.overline-num {
+  @apply font-mono text-[11px] font-semibold tracking-[0.3em] uppercase;
+}
+.overline-rule {
+  @apply h-px w-10 bg-ink/25;
+}
+.overline-label {
+  @apply font-mono text-[11px] tracking-[0.3em] uppercase text-ink/60;
+}
+
+/* ---- titular de sección con numeral fantasma ---- */
+.section-head {
+  @apply relative mb-14 md:mb-20;
+}
+.section-head-ghost {
+  @apply pointer-events-none absolute -top-14 right-0 hidden select-none
+         font-display text-[11rem] font-black leading-none md:block
+         txt-outline-ink;
+}
+.section-head-title {
+  @apply mt-6 max-w-3xl font-display text-4xl font-black
+         leading-[1.02] tracking-tight md:text-6xl text-ink;
+}
+.section-head-lead {
+  @apply mt-6 max-w-2xl text-base leading-relaxed md:text-lg text-ink/65;
+}
+
+/* ---- titular oscuro ---- */
+.section-head-dark .section-head-ghost {
+  @apply txt-outline-cream;
+}
+.section-head-dark .section-head-title {
+  @apply text-cream;
+}
+.section-head-dark .section-head-lead {
+  @apply text-cream/65;
+}
+.section-head-dark .overline-rule {
+  @apply bg-cream/25;
+}
+.section-head-dark .overline-label {
+  @apply text-cream/60;
+}
+
+/* ─────────────────────────────────────────────
+   § 07   COMPONENTES — Fórmula gramatical
+   ───────────────────────────────────────────── */
+
+.formula-bar {
+  @apply flex flex-wrap items-center gap-x-2.5 gap-y-2 rounded-xl
+         border border-ink/15 bg-ink/[0.03] px-4 py-3;
+}
+.formula-bar-dark {
+  @apply border-cream/15 bg-cream/[0.04];
+}
+.formula-label {
+  @apply mr-1 font-mono text-[10px] uppercase tracking-[0.25em] text-ink/40;
+}
+.formula-label-dark {
+  @apply text-cream/40;
+}
+
+/* token: lo (píldora sólida de acento) */
+.f-lo {
+  @apply rounded-md px-2 py-0.5 font-display text-lg font-black italic leading-tight;
+}
+
+/* token: slot (borde punteado) */
+.f-slot {
+  @apply rounded-md border border-dashed border-ink/35 px-2 py-0.5
+         font-mono text-xs md:text-sm text-ink/80;
+}
+.f-slot-dark {
+  @apply border-cream/35 text-cream/80;
+}
+
+/* token: operador */
+.f-op {
+  @apply font-mono text-sm text-ink/40;
+}
+.f-op-dark {
+  @apply text-cream/40;
+}
+
+/* token: texto serif */
+.f-txt {
+  @apply font-display italic text-ink/85;
+}
+.f-txt-dark {
+  @apply text-cream/85;
+}
+
+/* ─────────────────────────────────────────────
+   § 08   COMPONENTES — Tarjeta de ejemplo
+   ───────────────────────────────────────────── */
+
+.card-light {
+  @apply rounded-2xl border border-ink/15 bg-paper
+         p-5 md:p-6
+         shadow-[0_18px_40px_-30px_rgba(25,20,16,0.35)];
+}
+.card-dark {
+  @apply rounded-2xl border border-cream/15 bg-cream/[0.04]
+         p-5 md:p-6;
+}
+
+/* ─────────────────────────────────────────────
+   § 09   COMPONENTES — Píldora de categoría
+   ───────────────────────────────────────────── */
+
+.cat-chip {
+  @apply inline-flex items-center gap-2 rounded-full border
+         px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em];
+}
+.cat-chip-dot {
+  @apply h-1.5 w-1.5 rounded-full;
+}
+
+/* ─────────────────────────────────────────────
+   § 10   COMPONENTES — Stat strip (3 celdas)
+   ───────────────────────────────────────────── */
+
+.stat-strip {
+  @apply grid grid-cols-3 border-t border-ink/15;
+}
+.stat-cell {
+  @apply flex flex-col gap-1 py-6 pr-4 md:py-8;
+}
+.stat-cell + .stat-cell {
+  @apply border-l border-ink/15 pl-5 md:pl-8;
+}
+.stat-num {
+  @apply font-display text-4xl font-black md:text-6xl;
+}
+.stat-label {
+  @apply font-mono text-[9px] uppercase tracking-[0.22em] text-ink/55 md:text-[11px];
+}
+
+/* ─────────────────────────────────────────────
+   § 11   COMPONENTES — Wizard / árbol de decisión
+   ───────────────────────────────────────────── */
+
+.wizard-step-label {
+  @apply font-mono text-[10px] uppercase tracking-[0.28em] text-gold-bright;
+}
+.wizard-question {
+  @apply mt-4 max-w-lg font-display text-2xl font-black leading-tight md:text-4xl text-cream;
+}
+.wizard-option {
+  @apply group flex w-full items-center justify-between gap-4
+         rounded-xl border border-cream/15 bg-cream/[0.03]
+         px-5 py-4 text-left
+         transition-all duration-300
+         hover:border-gold-bright/60 hover:bg-cream/[0.07];
+}
+.wizard-option-title {
+  @apply block text-sm font-semibold text-cream md:text-base;
+}
+.wizard-option-hint {
+  @apply mt-1 block font-mono text-[10px] text-cream/45;
+}
+
+/* ─────────────────────────────────────────────
+   § 12   COMPONENTES — Quiz y resultado
+   ───────────────────────────────────────────── */
+
+.quiz-progress-bar {
+  @apply h-1.5 flex-1 rounded-full transition-colors duration-500;
+}
+
+.quiz-option {
+  @apply flex w-full items-center justify-between gap-3 rounded-xl border
+         px-4 py-3 text-left transition-all duration-300;
+}
+
+.quiz-option-default {
+  @apply border-cream/15 bg-cream/[0.03] text-cream/85 hover:border-cream/45 hover:bg-cream/[0.07];
+}
+.quiz-option-correct {
+  @apply border-viridian bg-viridian/25 text-cream;
+}
+.quiz-option-wrong {
+  @apply border-crimson bg-crimson/25 text-cream;
+}
+.quiz-option-muted {
+  @apply border-cream/10 bg-transparent text-cream/35;
+}
+
+.quiz-feedback-correct {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+         bg-viridian text-paper;
+}
+.quiz-feedback-wrong {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+         bg-crimson text-paper;
+}
+
+/* ─────────────────────────────────────────────
+   § 13   COMPONENTES — Botones de acción
+   ───────────────────────────────────────────── */
+
+.btn-solid {
+  @apply group inline-flex items-center gap-3 rounded-full
+         bg-ink px-7 py-3.5 text-sm font-semibold text-paper
+         transition-all hover:bg-crimson;
+}
+.btn-outline {
+  @apply group inline-flex items-center gap-3 rounded-full
+         border border-ink/25 px-7 py-3.5 text-sm font-semibold text-ink
+         transition-all hover:border-crimson hover:text-crimson;
+}
+.btn-solid-light {
+  @apply group inline-flex items-center gap-2.5 rounded-full
+         bg-cream px-6 py-3 text-sm font-semibold text-ink
+         transition-colors hover:bg-gold-bright;
+}
+.btn-outline-light {
+  @apply group inline-flex items-center gap-2.5 rounded-full
+         border border-cream/25 px-6 py-3 text-sm font-semibold text-cream
+         transition-colors hover:border-gold-bright hover:text-gold-bright;
+}
+
+/* ─────────────────────────────────────────────
+   § 14   UTILIDAD — Highlight de substring
+   ───────────────────────────────────────────── */
+
+.hi-sub {
+  @apply bg-transparent font-bold;
+  /* aplicar inline: color y box-shadow con --hi-hex */
+}
+
+/* ─────────────────────────────────────────────
+   § 15   UTILIDAD — Separador marquee
+   ───────────────────────────────────────────── */
+
+.marquee-light {
+  @apply relative overflow-hidden border-y border-ink/10 bg-parch py-4 md:py-5;
+}
+.marquee-dark {
+  @apply relative overflow-hidden border-y border-cream/10 bg-soot py-4 md:py-5;
+}
+
+/* ─────────────────────────────────────────────
+   § 16   UTILIDAD — Progress bar de scroll
+   ───────────────────────────────────────────── */
+
+.scroll-progress {
+  @apply fixed inset-x-0 top-0 z-[80] h-[3px] origin-left
+         bg-gradient-to-r from-viridian via-crimson to-gold-bright;
+}
