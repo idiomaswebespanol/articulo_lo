@@ -29,6 +29,24 @@ body {
   overflow-x: hidden;
 }
 
+p:not(.font-mono)[class~="text-sm"] {
+  font-size: 1rem;
+}
+
+p:not(.font-mono)[class~="text-base"] {
+  font-size: 1.125rem;
+}
+
+@media (min-width: 768px) {
+  p:not(.font-mono)[class~="text-sm"] {
+    font-size: 1.125rem;
+  }
+
+  p:not(.font-mono)[class~="text-base"] {
+    font-size: 1.25rem;
+  }
+}
+
 ::selection {
   background: var(--color-crimson);
   color: var(--color-paper);
